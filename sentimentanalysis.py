@@ -6,6 +6,9 @@ from textblob import TextBlob as tb
 import pandas as pd
 import json
 from flask import jsonify
+import datetime
+
+time = datetime.datetime.now()
 
 consumerKey = 'SV8UUKCsWGbHB0fBG9xEWdDDl'
 consumerSecret = 'gu7fZc75qzoZ20Cf1Y4FDSBGiX40H5L5dlMhmVqFecMZzUzBuo'
@@ -16,8 +19,8 @@ auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
 auth.set_access_token(accessToken, accessTokenSecret)
 api = tweepy.API(auth)
 
-def scrape_tweet(searchTweet):
-    tweets = tweepy.Cursor(api.search, q=searchTweet).items(100)
+def scrape_tweet(searchTweet, no_of_tweet):
+    tweets = tweepy.Cursor(api.search, q=searchTweet).items(no_of_tweet)
     data=[]
 
     for tweet in tweets:
@@ -40,7 +43,7 @@ def scrape_tweet(searchTweet):
     df=pd.DataFrame(data)
     df.to_csv('devclan.csv')
 
-    train = pd.read_csv('devclan.csv', usecols = ['Sentiment'])
+    train = pd.read_csv('devclan.csv', usecols = ['Sentiment', "Tweettime"])
     #  open('devclan.json', 'r') as f:
     #     train_json = json.loatrain.to_json('devclan.json')
     # withd(f)
@@ -60,17 +63,13 @@ def scrape_tweet(searchTweet):
     per_neu = float(neu/total* 100)
     train_json ={"percentages": 
                     {
-                        "positive": round(per_pos, 3),
-                        "negative":round(per_neg, 3), 
-                        "neutral":round(per_neu, 3)
-                    }
+                    "positive": round(per_pos, 3),
+                    "negative":round(per_neg, 3), 
+                    "neutral":round(per_neu, 3)
+                    },
+                "time" : time 
                 }
     train_json = jsonify(train_json)
-    
-   
-   
-   
-   
    
    
    # time = train['Tweettime']
@@ -98,3 +97,6 @@ def scrape_tweet(searchTweet):
     # return plt.show()
     
     return train_json
+
+
+
