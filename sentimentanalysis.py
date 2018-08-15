@@ -7,6 +7,7 @@ import pandas as pd
 import json
 from flask import jsonify
 import datetime
+from tweepy.error import TweepError
 
 time = datetime.datetime.now()
 
@@ -21,8 +22,8 @@ api = tweepy.API(auth)
 
 def scrape_tweet(searchTweet, no_of_tweet):
     try:
-        tweets = tweepy.Cursor(api.search, q=searchTweet).items(float(no_of_tweet))
-    except tweepy.error.TweepError:
+        tweets = tweepy.Cursor(api.search, q=searchTweet).items((no_of_tweet))
+    except (TweepError, ValueError):
         print("Too many requests")
 
     data=[]
