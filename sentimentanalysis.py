@@ -28,23 +28,26 @@ def scrape_tweet(searchTweet, no_of_tweet):
 
     data=[]
 
-    for tweet in tweets:
-        text=tweet.text
-        tweet_time = tweet.created_at
-        textWords=text
+    try:
+        for tweet in tweets:
+            text=tweet.text
+            tweet_time = tweet.created_at
+            textWords=text
+            
+            analysis = tb(textWords)
+            polarity = 'Positive'
+            if(analysis.sentiment.polarity < 0):
+                polarity = 'Negative'
+            if(0<=analysis.sentiment.polarity <=0.2):
+                polarity = 'Neutral'
         
-        analysis = tb(textWords)
-        polarity = 'Positive'
-        if(analysis.sentiment.polarity < 0):
-            polarity = 'Negative'
-        if(0<=analysis.sentiment.polarity <=0.2):
-            polarity = 'Neutral'
-    
-        dic={}
-        dic['Sentiment']=polarity
-        dic['Tweet'] = textWords
-        dic['Tweettime'] = tweet_time
-        data.append(dic)
+            dic={}
+            dic['Sentiment']=polarity
+            dic['Tweet'] = textWords
+            dic['Tweettime'] = tweet_time
+            data.append(dic)
+    except UnboundLocalError:
+        pass
     df=pd.DataFrame(data)
     df.to_csv('devclan.csv')
 
